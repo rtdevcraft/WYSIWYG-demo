@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -31,6 +31,11 @@ import RedoIcon from '@mui/icons-material/Redo'
 
 export default function TiptapEditor() {
   const [headingLevel, setHeadingLevel] = useState<string>('p')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -112,8 +117,28 @@ export default function TiptapEditor() {
     editor.chain().focus().clearNodes().unsetAllMarks().run()
   }, [editor])
 
-  if (!editor) {
-    return null
+  if (!editor || !mounted) {
+    return (
+      <Box sx={{ maxWidth: '800px', margin: '2rem auto' }}>
+        <Typography variant='h4' component='h1' gutterBottom>
+          WYSIWYG Editor (Tiptap)
+        </Typography>
+
+        <Paper elevation={2} sx={{ overflow: 'hidden', minHeight: 500 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: 500,
+              color: 'text.secondary',
+            }}
+          >
+            Loading editor...
+          </Box>
+        </Paper>
+      </Box>
+    )
   }
 
   return (
